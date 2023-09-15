@@ -16,7 +16,7 @@ export default function Home() {
           <div>
             <Link
               suppressHydrationWarning={true}
-              href="/trading-chart"
+              href="/trading-chart-gold"
               className="inline-flex items-center justify-center h-12 px-6 font-medium 
               tracking-wide text-white transition duration-200 rounded 
               shadow-md bg-gray-800 hover:bg-gray-400 focus:shadow-outline focus:outline-none"

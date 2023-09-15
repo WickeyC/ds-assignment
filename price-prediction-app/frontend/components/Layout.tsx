@@ -5,6 +5,8 @@ import { Toaster } from "react-hot-toast";
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
+  const [isTradingMenuOpen, setIsTradingMenuOpen] = useState<boolean>(false);
+  const [isSingleMenuOpen, setIsSingleMenuOpen] = useState<boolean>(false);
 
   return (
     <>
@@ -14,26 +16,107 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           <div className="relative flex grid items-center grid-cols-2 lg:grid-cols-3">
             <ul className="flex items-center hidden space-x-8 lg:flex">
               <li>
-                <Link
-                  suppressHydrationWarning={true}
-                  href="/trading-chart"
-                  aria-label="Trading Chart"
-                  title="Trading Chart"
-                  className="font-medium tracking-wide text-gray-100 transition-colors duration-200 hover:text-gray-400"
+                <div
+                  onMouseEnter={() => setIsTradingMenuOpen(true)}
+                  onMouseLeave={() => setIsTradingMenuOpen(false)}
                 >
-                  Trading Chart
-                </Link>
+                  <Link
+                    suppressHydrationWarning={true}
+                    href="/trading-chart-gold"
+                    aria-label="Trading Chart"
+                    title="Trading Chart"
+                    className="font-medium tracking-wide text-gray-100 transition-colors duration-200 hover:text-gray-400"
+                  >
+                    Trading Chart
+                  </Link>
+                  {isTradingMenuOpen && (
+                    <div className="absolute">
+                      {" "}
+                      <div className="mt-2 -ml-2 bg-white rounded shadow-lg">
+                        <ul>
+                          <li>
+                            <Link
+                              suppressHydrationWarning={true}
+                              href="/trading-chart-gold"
+                              className="block px-4 py-2 text-gray-800 hover:bg-gray-300"
+                            >
+                              Gold
+                            </Link>
+                          </li>
+                          <li>
+                            <Link
+                              suppressHydrationWarning={true}
+                              href="/trading-chart-platinum"
+                              className="block px-4 py-2 text-gray-800 hover:bg-gray-300"
+                            >
+                              Platinum
+                            </Link>
+                          </li>
+                          <li>
+                            <Link
+                              suppressHydrationWarning={true}
+                              href="/trading-chart-silver"
+                              className="block px-4 py-2 text-gray-800 hover:bg-gray-300"
+                            >
+                              Silver
+                            </Link>
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </li>
               <li>
-                <Link
-                  suppressHydrationWarning={true}
-                  href="/single-day"
-                  aria-label="Single Day"
-                  title="Single Day"
-                  className="font-medium tracking-wide text-gray-100 transition-colors duration-200 hover:text-gray-400"
+                <div
+                  onMouseEnter={() => setIsSingleMenuOpen(true)}
+                  onMouseLeave={() => setIsSingleMenuOpen(false)}
                 >
-                  Single Day
-                </Link>
+                  <Link
+                    suppressHydrationWarning={true}
+                    href="/single-day-gold"
+                    aria-label="Single Day"
+                    title="Single Day"
+                    className="font-medium tracking-wide text-gray-100 transition-colors duration-200 hover:text-gray-400"
+                  >
+                    Single Day
+                  </Link>
+                  {isSingleMenuOpen && (
+                    <div className="absolute">
+                      <div className="mt-2 -ml-2 bg-white rounded shadow-lg">
+                        <ul>
+                          <li>
+                            <Link
+                              suppressHydrationWarning={true}
+                              href="/single-day-gold"
+                              className="block px-4 py-2 text-gray-800 hover:bg-gray-300"
+                            >
+                              Gold
+                            </Link>
+                          </li>
+                          <li>
+                            <Link
+                              suppressHydrationWarning={true}
+                              href="/single-day-platinum"
+                              className="block px-4 py-2 text-gray-800 hover:bg-gray-300"
+                            >
+                              Platinum
+                            </Link>
+                          </li>
+                          <li>
+                            <Link
+                              suppressHydrationWarning={true}
+                              href="/single-day-silver"
+                              className="block px-4 py-2 text-gray-800 hover:bg-gray-300"
+                            >
+                              Silver
+                            </Link>
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </li>
             </ul>
             <Link
@@ -130,25 +213,85 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                     <nav>
                       <ul className="space-y-4">
                         <li>
-                          <Link
-                            suppressHydrationWarning={true}
-                            href="/trading-chart"
-                            aria-label="Trading Chart"
+                          <h1
                             title="Trading Chart"
-                            className="font-medium tracking-wide text-gray-100 transition-colors duration-200 hover:text-gray-400"
+                            className="font-medium tracking-wide text-gray-100"
                           >
                             Trading Chart
+                          </h1>
+                        </li>
+                        <li>
+                          <Link
+                            suppressHydrationWarning={true}
+                            href="/trading-chart-gold"
+                            aria-label="Trading Chart Gold"
+                            title="Trading Chart Gold"
+                            className="font-normal ml-6 tracking-wide text-gray-200 transition-colors duration-200 hover:text-gray-400"
+                          >
+                            Gold
                           </Link>
                         </li>
                         <li>
                           <Link
                             suppressHydrationWarning={true}
-                            href="/single-day"
-                            aria-label="Single Day"
+                            href="/trading-chart-platinum"
+                            aria-label="Trading Chart Platinum"
+                            title="Trading Chart Platinum"
+                            className="font-normal ml-6 tracking-wide text-gray-200 transition-colors duration-200 hover:text-gray-400"
+                          >
+                            Platinum
+                          </Link>
+                        </li>
+                        <li>
+                          <Link
+                            suppressHydrationWarning={true}
+                            href="/trading-chart-silver"
+                            aria-label="Trading Chart Silver"
+                            title="Trading Chart Silver"
+                            className="font-normal ml-6 tracking-wide text-gray-200 transition-colors duration-200 hover:text-gray-400"
+                          >
+                            Silver
+                          </Link>
+                        </li>
+                        <li>
+                          <h1
                             title="Single Day"
-                            className="font-medium tracking-wide text-gray-100 transition-colors duration-200 hover:text-gray-400"
+                            className="font-medium tracking-wide text-gray-100"
                           >
                             Single Day
+                          </h1>
+                        </li>
+                        <li>
+                          <Link
+                            suppressHydrationWarning={true}
+                            href="/single-day-gold"
+                            aria-label="Single Day Gold"
+                            title="Single Day Gold"
+                            className="font-medium ml-6 tracking-wide text-gray-100 transition-colors duration-200 hover:text-gray-400"
+                          >
+                            Gold
+                          </Link>
+                        </li>
+                        <li>
+                          <Link
+                            suppressHydrationWarning={true}
+                            href="/single-day-platinum"
+                            aria-label="Single Day Platinum"
+                            title="Single Day Platinum"
+                            className="font-normal ml-6 tracking-wide text-gray-200 transition-colors duration-200 hover:text-gray-400"
+                          >
+                            Platinum
+                          </Link>
+                        </li>
+                        <li>
+                          <Link
+                            suppressHydrationWarning={true}
+                            href="/single-day-silver"
+                            aria-label="Single Day Silver"
+                            title="Single Day Silver"
+                            className="font-normal ml-6 tracking-wide text-gray-200 transition-colors duration-200 hover:text-gray-400"
+                          >
+                            Silver
                           </Link>
                         </li>
                       </ul>

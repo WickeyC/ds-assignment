@@ -89,8 +89,9 @@ def gold_price_prediction_single_day(GOLD_high, GOLD_low, GOLD_open, GDX_low,
 
     return predicted_price[0]  # Return the predicted gold price for the single day
 
-def gold_price_prediction_date_range(endDate):
+def gold_price_prediction_date_range(startDate, endDate):
     # Convert the input endDate to a Timestamp object
+    startDate = pd.Timestamp(startDate)
     endDate = pd.Timestamp(endDate)
 
     available_dates = X_gold_test_scaled.index
@@ -100,7 +101,9 @@ def gold_price_prediction_date_range(endDate):
     # Find the last date in the available dates
     last_available_date = available_dates.max()
 
-    # Validate the endDate
+    # Validate the dates
+    if (startDate >= first_available_date or startDate > endDate):
+        return {'error': 'startDate is same or later than the first available prediction date.'}
     if endDate < first_available_date:
         return {'error': 'endDate is earlier than the first available date.'}
     elif endDate > last_available_date:
@@ -120,13 +123,28 @@ def gold_price_prediction_date_range(endDate):
     
     # Concatenate the 'GOLD_ajclose' values
     offset_day = predicted_date_range[0] - pd.DateOffset(days=1)
-    gold_ajclose_before_prediction = gold_price['GOLD_ajclose'][:offset_day]
+    gold_ajclose_before_prediction = gold_price['GOLD_ajclose'][startDate:offset_day]
     combined_ajclose = pd.concat([gold_ajclose_before_prediction, predicted_ajclose])
     
+    gold_price_filtered = gold_price.loc[gold_price.index <= available_dates.max()]
+    gold_price_filtered = gold_price_filtered.loc[gold_price_filtered.index >= startDate]
+    
+    # Create the chart_data list by iterating over the data
+    chart_date_range = gold_price.index[(gold_price.index >= startDate) & (gold_price.index <= endDate)]
+
+    chart_data = []
+    for date, ajclose in zip(chart_date_range, combined_ajclose):
+        timestamp = int(date.timestamp()) * 1000  # Convert to milliseconds
+        open_price = gold_price_filtered.at[date, 'GOLD_open']
+        high_price = gold_price_filtered.at[date, 'GOLD_high']
+        low_price = gold_price_filtered.at[date, 'GOLD_low']
+        chart_data.append([timestamp, open_price, high_price, low_price, ajclose])
+
     return {
         'predicted_price': predicted_prices.tolist(),
         'predicted_date_range': predicted_date_range.tolist(),
-        'combined_ajclose': combined_ajclose.tolist()
+        'combined_ajclose': combined_ajclose.tolist(),
+        'chart_data': chart_data
     }
 
 def get_gold_price_sample_features(date):
@@ -224,8 +242,9 @@ def get_sample_features():
 def predict_date_range():
     data = request.get_json()
     try:
+        start_date = data['start_date']
         end_date = data['end_date']
-        predictions = gold_price_prediction_date_range(end_date)
+        predictions = gold_price_prediction_date_range(start_date, end_date)
         return jsonify(predictions)
     except Exception as e:
         return jsonify({'error': str(e)})
