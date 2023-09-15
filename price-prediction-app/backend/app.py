@@ -5,6 +5,9 @@ import pandas as pd
 from sklearn.model_selection import TimeSeriesSplit
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.linear_model import LinearRegression
+import warnings
+# Disable all warnings
+warnings.filterwarnings("ignore")
 
 gold_price_path = '../../processed_price_gold.csv'
 platinum_price_path = '../../processed_price_platinum.csv'
@@ -14,6 +17,7 @@ gold_price = pd.read_csv(gold_price_path,index_col='Date',parse_dates=True,infer
 platinum_price = pd.read_csv(platinum_price_path,index_col='Date',parse_dates=True,infer_datetime_format=True)
 silver_price = pd.read_csv(silver_price_path,index_col='Date',parse_dates=True,infer_datetime_format=True)
 
+print('---------------------')
 print("Done reading files")
 scaler = MinMaxScaler()
 tscv = TimeSeriesSplit(n_splits=5)
@@ -37,8 +41,8 @@ X_gold_test_scaled = pd.DataFrame(X_gold_test_scaled, columns=X_gold_test.column
 lr_gold_model = LinearRegression(n_jobs=-1)
 lr_gold_model.fit(X_gold_train_scaled, y_gold_train)
 
-
-	
+def get_available_date():
+    return (gold_price.index).tolist()
 
 def gold_price_prediction_single_day(GOLD_high, GOLD_low, GOLD_open, GDX_low,
                                      GDX_close, GDX_high, GDX_ajclose, GDX_open,
@@ -85,69 +89,148 @@ def gold_price_prediction_single_day(GOLD_high, GOLD_low, GOLD_open, GDX_low,
 
     return predicted_price[0]  # Return the predicted gold price for the single day
 
-
 def gold_price_prediction_date_range(endDate):
-    # Limit input end date to the range of y_high_corr_train's first day and maximum of '2018-12-31'
-    min_date = y_high_corr_train.index.min()
-    max_date = pd.to_datetime('2018-12-31')
-    endDate = min(max_date, max(endDate, min_date))
+    # Convert the input endDate to a Timestamp object
+    endDate = pd.Timestamp(endDate)
 
-    # Modify X_high_corr_test_scaled dataframe to include only the date range before and including the end date
-    X_high_corr_test_scaled_filtered = X_high_corr_test_scaled[X_high_corr_test_scaled.index <= endDate]
+    available_dates = X_gold_test_scaled.index
+    
+    # Find the first date in the available dates
+    first_available_date = available_dates.min()
+    # Find the last date in the available dates
+    last_available_date = available_dates.max()
 
-    # Make predictions using the linear regression model
-    predicted_prices = lr_gold_model.predict(X_high_corr_test_scaled_filtered)
+    # Validate the endDate
+    if endDate < first_available_date:
+        return {'error': 'endDate is earlier than the first available date.'}
+    elif endDate > last_available_date:
+        return {'error': 'endDate is later than the last available date.'}
 
-    # Combine necessary data for return
-    # 1. Extract 'GOLD_open', 'GOLD_high', 'GOLD_low', 'GOLD_volume' for the full date range from gold_price
-    gold_price_data = gold_price[['GOLD_open', 'GOLD_high', 'GOLD_low', 'GOLD_volume']]
-
-    # 2. Include both the start date and end date of the predicted data for coloring purposes
-    predicted_date_range = pd.date_range(start='2011-12-15', end=endDate, freq='D')
-
-    # 3. Include 'GOLD_ajclose' of the predicted date range from the predicted values
+    # limit the predicted date range
+    predicted_date_range = available_dates[available_dates <= endDate]
+    
+    # Only the date range before and including the end date
+    X_gold_test_scaled_filtered = X_gold_test_scaled[X_gold_test_scaled.index <= endDate]
+    
+    # Make predictions using the linear regression model for the filtered date range
+    predicted_prices = lr_gold_model.predict(X_gold_test_scaled_filtered)
+    
+    # Create a Series for predicted prices with the filtered date range
     predicted_ajclose = pd.Series(predicted_prices, index=predicted_date_range)
-
-    # 4. Before the predicted date range, take 'GOLD_ajclose' from gold_price
-    gold_ajclose_before_prediction = gold_price['GOLD_ajclose'][:predicted_date_range[0]]
-
+    
     # Concatenate the 'GOLD_ajclose' values
+    offset_day = predicted_date_range[0] - pd.DateOffset(days=1)
+    gold_ajclose_before_prediction = gold_price['GOLD_ajclose'][:offset_day]
     combined_ajclose = pd.concat([gold_ajclose_before_prediction, predicted_ajclose])
-
+    
     return {
         'predicted_price': predicted_prices.tolist(),
-        'gold_price_data': gold_price_data.to_dict(orient='index'),
         'predicted_date_range': predicted_date_range.tolist(),
         'combined_ajclose': combined_ajclose.tolist()
     }
 
+def get_gold_price_sample_features(date):
+    # Convert the input date to a Timestamp object
+    date = pd.Timestamp(date)
+
+    available_dates = X_gold.index
+    
+    # Find the first date in the available dates
+    first_available_date = available_dates.min()
+    # Find the last date in the available dates
+    last_available_date = available_dates.max()
+
+    # Validate the date
+    if date < first_available_date:
+        return {'error': 'Date is earlier than the first available date.'}
+    elif date > last_available_date:
+        return {'error': 'Date is later than the last available date.'}
+    
+    try:
+        # Get the features for the specified date
+        features = X_gold.loc[date].tolist()
+        return features
+    except KeyError:
+        return {'error': 'Data not available for the specified date.'}
 
 # Flask app
 app = Flask(__name__)
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 
-@app.route('/content-based', methods=['POST'])
+@app.route('/get-available-dates', methods=['POST'])
 @cross_origin()
-def contentBased():
-    content = request.get_json()
-    product_title = content['title']
-    if product_title not in all_titles:
-        
-        return jsonify(
-            success = False,
-            message = "Product not found"
-        )
-    else:
-        result_final = ensemble_recommendations(product_title)
-        return result_final.to_json(orient='records')
-    
-@app.route('/titles', methods=['GET'])
-@cross_origin()
-def getTitle():
-    return jsonify(
-        data = all_titles
-    )
+def get_available_dates():
+    return jsonify(get_available_date())
 
+@app.route('/single-day/gold', methods=['POST'])
+@cross_origin()
+def predict_single_day_gold():
+    data = request.get_json()
+    try:
+        GOLD_high = data['GOLD_high']
+        GOLD_low = data['GOLD_low']
+        GOLD_open = data['GOLD_open']
+        GDX_low = data['GDX_low']
+        GDX_close = data['GDX_close']
+        GDX_high = data['GDX_high']
+        GDX_ajclose = data['GDX_ajclose']
+        GDX_open = data['GDX_open']
+        SF_low = data['SF_low']
+        SF_price = data['SF_price']
+        SF_open = data['SF_open']
+        SF_high = data['SF_high']
+        EG_low = data['EG_low']
+        EG_open = data['EG_open']
+        EG_close = data['EG_close']
+        EG_high = data['EG_high']
+        EG_ajclose = data['EG_ajclose']
+        PLT_price = data['PLT_price']
+        PLT_high = data['PLT_high']
+        PLT_low = data['PLT_low']
+        PLT_open = data['PLT_open']
+        OF_high = data['OF_high']
+        OF_price = data['OF_price']
+        OF_open = data['OF_open']
+        OF_low = data['OF_low']
+        SF_volume = data['SF_volume']
+        
+        predicted_price = gold_price_prediction_single_day(GOLD_high, GOLD_low, GOLD_open, GDX_low,
+                                     GDX_close, GDX_high, GDX_ajclose, GDX_open,
+                                     SF_low, SF_price, SF_open, SF_high, EG_low,
+                                     EG_open, EG_close, EG_high, EG_ajclose,
+                                     PLT_price, PLT_high, PLT_low, PLT_open,
+                                     OF_high, OF_price, OF_open, OF_low, SF_volume)
+        return jsonify({'predicted_price': predicted_price})
+    except Exception as e:
+        return jsonify({'error': str(e)})
+ 
+@app.route('/single-day/gold-sample-features', methods=['POST'])
+@cross_origin()
+def get_sample_features():
+    data = request.get_json()
+    try:
+        date = data['date']  # Assuming 'date' is a key in your JSON data
+        
+        # Get gold sample features for the specified date
+        sample_features = get_gold_price_sample_features(date)
+        
+        return jsonify({'sample_features': sample_features})
+    except Exception as e:
+        return jsonify({'error': str(e)})
+
+@app.route('/trading-chart-gold', methods=['POST'])
+@cross_origin()
+def predict_date_range():
+    data = request.get_json()
+    try:
+        end_date = data['end_date']
+        predictions = gold_price_prediction_date_range(end_date)
+        return jsonify(predictions)
+    except Exception as e:
+        return jsonify({'error': str(e)})
+
+print('App Ready')
+print('---------------------')
 if __name__ == '__main__':
     app.run()
