@@ -531,7 +531,7 @@ def predict_single_day_gold():
  
 @app.route('/single-day/gold-sample-features', methods=['POST'])
 @cross_origin()
-def get_sample_features():
+def get_sample_features_gold():
     data = request.get_json()
     try:
         date = data['date']  # Assuming 'date' is a key in your JSON data
@@ -545,12 +545,163 @@ def get_sample_features():
 
 @app.route('/trading-chart-gold', methods=['POST'])
 @cross_origin()
-def predict_date_range():
+def predict_date_range_gold():
     data = request.get_json()
     try:
         start_date = data['start_date']
         end_date = data['end_date']
         predictions = gold_price_prediction_date_range(start_date, end_date)
+        return jsonify(predictions)
+    except Exception as e:
+        return jsonify({'error': str(e)})
+
+@app.route('/single-day/platinum', methods=['POST'])
+@cross_origin()
+def predict_single_day_platinum():
+    data = request.get_json()
+    try:
+        PLT_high = data['PLT_high']
+        PLT_low = data['PLT_low']
+        PLT_open = data['PLT_open']
+        USO_high = data['USO_high']
+        USO_ajclose = data['USO_ajclose']
+        USO_close = data['USO_close']
+        USO_open = data['USO_open']
+        USO_low = data['USO_low']
+        EG_ajclose = data['EG_ajclose']
+        EG_low = data['EG_low']
+        EG_close = data['EG_close']
+        EG_open = data['EG_open']
+        EG_high = data['EG_high']
+        OF_high = data['OF_high']
+        OF_price = data['OF_price']
+        OF_open = data['OF_open']
+        OF_low = data['OF_low']
+        OS_high = data['OS_high']
+        OS_open = data['OS_open']
+        OS_price = data['OS_price']
+        OS_low = data['OS_low']
+        EU_high = data['EU_high']
+        EU_price = data['EU_price']
+        EU_open = data['EU_open']
+        EU_low = data['EU_low']
+        SF_high = data['SF_high']
+        SF_price = data['SF_price']
+        SF_open = data['SF_open']
+        SF_low = data['SF_low']
+        GOLD_high = data['GOLD_high']
+        GOLD_ajclose = data['GOLD_ajclose']
+        GOLD_close = data['GOLD_close']
+        GOLD_open = data['GOLD_open']
+        GOLD_low = data['GOLD_low']
+        GDX_high = data['GDX_high']
+        GDX_open = data['GDX_open']
+        GDX_close = data['GDX_close']
+        GDX_low = data['GDX_low']
+        GDX_ajclose = data['GDX_ajclose']
+
+        predicted_price = platinum_price_prediction_single_day(PLT_high, PLT_low, PLT_open, USO_high, USO_ajclose,
+                                                               USO_close, USO_open, USO_low, EG_ajclose, EG_low,
+                                                               EG_close, EG_open, EG_high, OF_high, OF_price,
+                                                               OF_open, OF_low, OS_high, OS_open, OS_price,
+                                                               OS_low, EU_high, EU_price, EU_open, EU_low,
+                                                               SF_high, SF_price, SF_open, SF_low, GOLD_high,
+                                                               GOLD_ajclose, GOLD_close, GOLD_open, GOLD_low,
+                                                               GDX_high, GDX_open, GDX_close, GDX_low, GDX_ajclose)
+
+        return jsonify({'predicted_price': predicted_price})
+    except Exception as e:
+        return jsonify({'error': str(e)})
+
+@app.route('/single-day/platinum-sample-features', methods=['POST'])
+@cross_origin()
+def get_sample_features_platinum():
+    data = request.get_json()
+    try:
+        date = data['date'] 
+        
+        sample_features = get_platinum_price_sample_features(date)
+        
+        return jsonify({'sample_features': sample_features})
+    except Exception as e:
+        return jsonify({'error': str(e)})
+
+@app.route('/trading-chart-platinum', methods=['POST'])
+@cross_origin()
+def predict_date_range_platinum():
+    data = request.get_json()
+    try:
+        start_date = data['start_date']
+        end_date = data['end_date']
+        predictions = platinum_price_prediction_date_range(start_date, end_date)
+        return jsonify(predictions)
+    except Exception as e:
+        return jsonify({'error': str(e)})
+
+@app.route('/single-day/silver', methods=['POST'])
+@cross_origin()
+def predict_single_day_silver():
+    data = request.get_json()
+    try:
+        SF_high = data['SF_high']
+        SF_low = data['SF_low']
+        SF_open = data['SF_open']
+        GOLD_high = data['GOLD_high']
+        GOLD_close = data['GOLD_close']
+        GOLD_ajclose = data['GOLD_ajclose']
+        GOLD_low = data['GOLD_low']
+        GOLD_open = data['GOLD_open']
+        GDX_high = data['GDX_high']
+        GDX_open = data['GDX_open']
+        GDX_close = data['GDX_close']
+        GDX_low = data['GDX_low']
+        GDX_ajclose = data['GDX_ajclose']
+        EG_low = data['EG_low']
+        EG_open = data['EG_open']
+        EG_close = data['EG_close']
+        EG_high = data['EG_high']
+        EG_ajclose = data['EG_ajclose']
+        PLT_price = data['PLT_price']
+        PLT_high = data['PLT_high']
+        PLT_low = data['PLT_low']
+        PLT_open = data['PLT_open']
+        OF_high = data['OF_high']
+        OF_price = data['OF_price']
+        OF_open = data['OF_open']
+        OF_low = data['OF_low']
+
+        predicted_price = silver_price_prediction_single_day(SF_high, SF_low, SF_open, GOLD_high, GOLD_close,
+                                                             GOLD_ajclose, GOLD_low, GOLD_open, GDX_high,
+                                                             GDX_open, GDX_close, GDX_low, GDX_ajclose,
+                                                             EG_low, EG_open, EG_close, EG_high, EG_ajclose,
+                                                             PLT_price, PLT_high, PLT_low, PLT_open, OF_high,
+                                                             OF_price, OF_open, OF_low)
+
+        return jsonify({'predicted_price': predicted_price})
+    except Exception as e:
+        return jsonify({'error': str(e)})
+
+@app.route('/single-day/silver-sample-features', methods=['POST'])
+@cross_origin()
+def get_sample_features_silver():
+    data = request.get_json()
+    try:
+        date = data['date'] 
+        
+        sample_features = get_silver_price_sample_features(date)
+        
+        return jsonify({'sample_features': sample_features})
+    except Exception as e:
+        return jsonify({'error': str(e)})
+
+@app.route('/trading-chart-silver', methods=['POST'])
+@cross_origin()
+def predict_date_range_silver():
+    data = request.get_json()
+    try:
+        start_date = data['start_date']
+        end_date = data['end_date']
+        predictions = silver_price_prediction_date_range(start_date, end_date)
         return jsonify(predictions)
     except Exception as e:
         return jsonify({'error': str(e)})
