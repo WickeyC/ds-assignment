@@ -2,65 +2,91 @@ import React, { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import axios from "axios";
 
-const SingleDayGoldPrediction = () => {
+const SingleDayPlatinumPrediction = () => {
   const [availableDates, setAvailableDates] = useState<string[]>([]);
   const [selectedDate, setSelectedDate] = useState<string>("");
   const [predictedPrice, setPredictedPrice] = useState<number>(NaN);
   const [formData, setFormData] = useState({
-    GOLD_high: "",
-    GOLD_low: "",
-    GOLD_open: "",
-    GDX_low: "",
-    GDX_close: "",
-    GDX_high: "",
-    GDX_ajclose: "",
-    GDX_open: "",
-    SF_low: "",
-    SF_price: "",
-    SF_open: "",
-    SF_high: "",
-    EG_low: "",
-    EG_open: "",
-    EG_close: "",
-    EG_high: "",
-    EG_ajclose: "",
-    PLT_price: "",
     PLT_high: "",
     PLT_low: "",
     PLT_open: "",
+    USO_high: "",
+    USO_ajclose: "",
+    USO_close: "",
+    USO_open: "",
+    USO_low: "",
+    EG_ajclose: "",
+    EG_low: "",
+    EG_close: "",
+    EG_open: "",
+    EG_high: "",
     OF_high: "",
     OF_price: "",
     OF_open: "",
     OF_low: "",
-    SF_volume: "",
+    OS_high: "",
+    OS_open: "",
+    OS_price: "",
+    OS_low: "",
+    EU_high: "",
+    EU_price: "",
+    EU_open: "",
+    EU_low: "",
+    SF_high: "",
+    SF_price: "",
+    SF_open: "",
+    SF_low: "",
+    GOLD_high: "",
+    GOLD_ajclose: "",
+    GOLD_close: "",
+    GOLD_open: "",
+    GOLD_low: "",
+    GDX_high: "",
+    GDX_open: "",
+    GDX_close: "",
+    GDX_low: "",
+    GDX_ajclose: "",
   });
   const fieldNames = [
-    "GOLD_high",
-    "GOLD_low",
-    "GOLD_open",
-    "GDX_low",
-    "GDX_close",
-    "GDX_high",
-    "GDX_ajclose",
-    "GDX_open",
-    "SF_low",
-    "SF_price",
-    "SF_open",
-    "SF_high",
-    "EG_low",
-    "EG_open",
-    "EG_close",
-    "EG_high",
-    "EG_ajclose",
-    "PLT_price",
     "PLT_high",
     "PLT_low",
     "PLT_open",
+    "USO_high",
+    "USO_ajclose",
+    "USO_close",
+    "USO_open",
+    "USO_low",
+    "EG_ajclose",
+    "EG_low",
+    "EG_close",
+    "EG_open",
+    "EG_high",
     "OF_high",
     "OF_price",
     "OF_open",
     "OF_low",
-    "SF_volume",
+    "OS_high",
+    "OS_open",
+    "OS_price",
+    "OS_low",
+    "EU_high",
+    "EU_price",
+    "EU_open",
+    "EU_low",
+    "SF_high",
+    "SF_price",
+    "SF_open",
+    "SF_low",
+    "GOLD_high",
+    "GOLD_ajclose",
+    "GOLD_close",
+    "GOLD_open",
+    "GOLD_low",
+    "GDX_high",
+    "GDX_open",
+    "GDX_close",
+    "GDX_low",
+    "GDX_ajclose",
   ];
 
   useEffect(() => {
@@ -110,7 +136,7 @@ const SingleDayGoldPrediction = () => {
     // Make a request to fetch sample features for the selected date
     if (selectedDate) {
       axios
-        .post(`http://localhost:5000/single-day/gold-sample-features`, {
+        .post(`http://localhost:5000/single-day/platinum-sample-features`, {
           date: selectedDate,
         })
         .then((response) => {
@@ -140,7 +166,7 @@ const SingleDayGoldPrediction = () => {
 
     // Send the form data to your Flask server
     axios
-      .post("http://localhost:5000/single-day/gold", formData)
+      .post("http://localhost:5000/single-day/platinum", formData)
       .then((response) => {
         // Handle the response from the server
         const { data } = response; // Get the response data
@@ -164,32 +190,45 @@ const SingleDayGoldPrediction = () => {
 
   const handleReset = () => {
     setFormData({
-      GOLD_high: "",
-      GOLD_low: "",
-      GOLD_open: "",
-      GDX_low: "",
-      GDX_close: "",
-      GDX_high: "",
-      GDX_ajclose: "",
-      GDX_open: "",
-      SF_low: "",
-      SF_price: "",
-      SF_open: "",
-      SF_high: "",
-      EG_low: "",
-      EG_open: "",
-      EG_close: "",
-      EG_high: "",
-      EG_ajclose: "",
-      PLT_price: "",
       PLT_high: "",
       PLT_low: "",
       PLT_open: "",
+      USO_high: "",
+      USO_ajclose: "",
+      USO_close: "",
+      USO_open: "",
+      USO_low: "",
+      EG_ajclose: "",
+      EG_low: "",
+      EG_close: "",
+      EG_open: "",
+      EG_high: "",
       OF_high: "",
       OF_price: "",
       OF_open: "",
       OF_low: "",
-      SF_volume: "",
+      OS_high: "",
+      OS_open: "",
+      OS_price: "",
+      OS_low: "",
+      EU_high: "",
+      EU_price: "",
+      EU_open: "",
+      EU_low: "",
+      SF_high: "",
+      SF_price: "",
+      SF_open: "",
+      SF_low: "",
+      GOLD_high: "",
+      GOLD_ajclose: "",
+      GOLD_close: "",
+      GOLD_open: "",
+      GOLD_low: "",
+      GDX_high: "",
+      GDX_open: "",
+      GDX_close: "",
+      GDX_low: "",
+      GDX_ajclose: "",
     });
     setPredictedPrice(NaN);
     setSelectedDate("");
@@ -201,7 +240,7 @@ const SingleDayGoldPrediction = () => {
       <div className="px-4 py-4 border rounded border-gray-100">
         {" "}
         <h1 className="text-center ml-2 mb-3 text-xl font-bold tracking-wide text-gray-800">
-          Gold Price: Single Day Prediction
+          Platinum Price: Single Day Prediction
         </h1>
         <hr className="mb-4"></hr>
         <form onSubmit={handleSubmit}>
@@ -296,7 +335,7 @@ const SingleDayGoldPrediction = () => {
                   />
                 </svg>
               </span>
-              Predicted GOLD price : $
+              Predicted PLATINUM price : $
               <span className="font-bold">{predictedPrice.toFixed(6)}</span>
             </p>
           </div>
@@ -306,4 +345,4 @@ const SingleDayGoldPrediction = () => {
   );
 };
 
-export default SingleDayGoldPrediction;
+export default SingleDayPlatinumPrediction;

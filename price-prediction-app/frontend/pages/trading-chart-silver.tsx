@@ -8,7 +8,7 @@ const DynamicChart = dynamic(() => import("react-apexcharts"), {
   ssr: false, // This disables server-side rendering for the component
 });
 
-export default function TradingChartGold() {
+export default function TradingChartSilver() {
   interface ApexChartProps {
     options: any; // Adjust the type to match your data structure
     series: any;
@@ -27,7 +27,7 @@ export default function TradingChartGold() {
         series: [
           {
             name: "candle",
-            data: goldChartData["chart_data"],
+            data: silverChartData["chart_data"],
           },
         ],
         options: {
@@ -38,7 +38,9 @@ export default function TradingChartGold() {
           annotations: {
             xaxis: [
               {
-                x: new Date(goldChartData["predicted_date_range"][0]).getTime(),
+                x: new Date(
+                  silverChartData["predicted_date_range"][0]
+                ).getTime(),
                 borderColor: "#00E396",
                 label: {
                   borderColor: "#00E396",
@@ -94,19 +96,19 @@ export default function TradingChartGold() {
     }
   }
 
-  const [goldChartData, setGoldChartData] = useState([]);
-  const [goldStartDate, setGoldStartDate] = useState<string>("2017-08-31");
-  const [goldEndDate, setGoldEndDate] = useState<string>("2018-03-21");
+  const [silverChartData, setSilverChartData] = useState([]);
+  const [silverStartDate, setSilverStartDate] = useState<string>("2017-08-31");
+  const [silverEndDate, setSilverEndDate] = useState<string>("2018-03-21");
 
   useEffect(() => {
-    // Function to fetch gold chart data
-    const fetchGoldChartData = async () => {
+    // Function to fetch chart data
+    const fetchSilverChartData = async () => {
       try {
         const response = await axios.post(
-          "http://localhost:5000/trading-chart-gold",
+          "http://localhost:5000/trading-chart-silver",
           {
-            start_date: goldStartDate,
-            end_date: goldEndDate,
+            start_date: silverStartDate,
+            end_date: silverEndDate,
           }
         );
 
@@ -117,50 +119,49 @@ export default function TradingChartGold() {
         }
 
         // Update the state with the fetched data
-        setGoldChartData(chartData);
+        setSilverChartData(chartData);
       } catch (error) {
-        console.error("Error fetching gold chart data:", error);
+        console.error("Error fetching silver chart data:", error);
         // Handle errors as needed
         toast.error("Error fetching data");
       }
     };
 
-    // Call the fetchGoldChartData function when goldEndDate changes
-    fetchGoldChartData();
-  }, [goldStartDate, goldEndDate]);
+    fetchSilverChartData();
+  }, [silverStartDate, silverEndDate]);
 
-  const handleGoldStartDateChange = (event) => {
-    setGoldStartDate(event.target.value);
+  const handleSilverStartDateChange = (event) => {
+    setSilverStartDate(event.target.value);
   };
 
-  const handleGoldEndDateChange = (event) => {
-    setGoldEndDate(event.target.value);
+  const handleSilverEndDateChange = (event) => {
+    setSilverEndDate(event.target.value);
   };
 
-  const isChartDataAvailable = Array.isArray(goldChartData["chart_data"]);
+  const isChartDataAvailable = Array.isArray(silverChartData["chart_data"]);
 
   return (
     <div className="px-4 py-6 mx-auto sm:max-w-xl md:max-w-full lg:max-w-screen-xl md:px-24 lg:px-8">
       <div className="px-4 py-4 border rounded border-gray-100">
         <h1 className="text-center ml-2 mb-3 text-xl font-bold tracking-wide text-gray-800">
-          Gold Price: Prediction Chart
+          Silver Price: Prediction Chart
         </h1>
         <div className="mb-8 border rounded border-gray-300 p-4 grid gap-4 grid-cols-[5fr,5fr]">
           <div>
             {" "}
             <label
               className="block text-gray-700 text-sm font-bold mb-1"
-              htmlFor="goldStartDate"
+              htmlFor="silverStartDate"
             >
               Start Date:
             </label>
             <input
               className="shadow appearance-none border rounded w-full py-1 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              id="goldStartDate"
+              id="silverStartDate"
               type="date"
-              name="goldStartDate"
-              value={goldStartDate}
-              onChange={handleGoldStartDateChange}
+              name="silverStartDate"
+              value={silverStartDate}
+              onChange={handleSilverStartDateChange}
               required
             />
           </div>
@@ -168,23 +169,23 @@ export default function TradingChartGold() {
           <div>
             <label
               className="block text-gray-700 text-sm font-bold mb-1"
-              htmlFor="goldEndDate"
+              htmlFor="silverEndDate"
             >
               End Date:
             </label>
             <input
               className="shadow appearance-none border rounded w-full py-1 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              id="goldEndDate"
+              id="silverEndDate"
               type="date"
-              name="goldEndDate"
-              value={goldEndDate}
-              onChange={handleGoldEndDateChange}
+              name="silverEndDate"
+              value={silverEndDate}
+              onChange={handleSilverEndDateChange}
               required
             />
           </div>
         </div>
         {isChartDataAvailable && (
-          <ApexChart options={{}} series={goldChartData["chart_data"]} />
+          <ApexChart options={{}} series={silverChartData["chart_data"]} />
         )}
       </div>
     </div>

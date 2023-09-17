@@ -21,7 +21,7 @@ export default function Home() {
               tracking-wide text-white transition duration-200 rounded 
               shadow-md bg-gray-800 hover:bg-gray-400 focus:shadow-outline focus:outline-none"
             >
-              Trading Chart View
+              Trading Chart (Gold)
             </Link>
           </div>
         </div>

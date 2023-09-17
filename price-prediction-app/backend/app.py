@@ -19,7 +19,9 @@ silver_price = pd.read_csv(silver_price_path,index_col='Date',parse_dates=True,i
 
 print('---------------------')
 print("Done reading files")
-scaler = MinMaxScaler()
+scaler_gold = MinMaxScaler()
+scaler_silver = MinMaxScaler()
+scaler_platinum = MinMaxScaler()
 tscv = TimeSeriesSplit(n_splits=5)
 
 # GOLD PREPROCESSING
@@ -34,8 +36,8 @@ X_gold = X_gold.drop(columns=['GOLD_close'])
 for train_index, test_index in tscv.split(X_gold):
     X_gold_train, X_gold_test = X_gold.iloc[train_index], X_gold.iloc[test_index]
     y_gold_train, y_gold_test = y_gold.iloc[train_index], y_gold.iloc[test_index]
-X_gold_train_scaled = scaler.fit_transform(X_gold_train)
-X_gold_test_scaled = scaler.transform(X_gold_test)
+X_gold_train_scaled = scaler_gold.fit_transform(X_gold_train)
+X_gold_test_scaled = scaler_gold.transform(X_gold_test)
 X_gold_train_scaled = pd.DataFrame(X_gold_train_scaled, columns=X_gold_train.columns, index=X_gold_train.index)
 X_gold_test_scaled = pd.DataFrame(X_gold_test_scaled, columns=X_gold_test.columns, index=X_gold_test.index)
 lr_gold_model = LinearRegression(n_jobs=-1)
@@ -49,11 +51,12 @@ platinum_ajclose_corr_df = platinum_ajclose_corr_df.drop('PLT_price').sort_value
 high_corr_features = platinum_ajclose_corr_df[platinum_ajclose_corr_df['Correlation with PLT_price'] > 0.7].index.tolist()
 y_platinum = platinum_price['PLT_price']
 X_platinum = platinum_price[high_corr_features]
+print(X_platinum.columns)
 for train_index, test_index in tscv.split(X_platinum):
     X_platinum_train, X_platinum_test = X_platinum.iloc[train_index], X_platinum.iloc[test_index]
     y_platinum_train, y_platinum_test = y_platinum.iloc[train_index], y_platinum.iloc[test_index]
-X_platinum_train_scaled = scaler.fit_transform(X_platinum_train)
-X_platinum_test_scaled = scaler.transform(X_platinum_test)
+X_platinum_train_scaled = scaler_silver.fit_transform(X_platinum_train)
+X_platinum_test_scaled = scaler_silver.transform(X_platinum_test)
 X_platinum_train_scaled = pd.DataFrame(X_platinum_train_scaled, columns=X_platinum_train.columns, index=X_platinum_train.index)
 X_platinum_test_scaled = pd.DataFrame(X_platinum_test_scaled, columns=X_platinum_test.columns, index=X_platinum_test.index)
 lr_platinum_model = LinearRegression(n_jobs=-1)
@@ -71,8 +74,8 @@ X_silver = silver_price[high_corr_features]
 for train_index, test_index in tscv.split(X_silver):
     X_silver_train, X_silver_test = X_silver.iloc[train_index], X_silver.iloc[test_index]
     y_silver_train, y_silver_test = y_silver.iloc[train_index], y_silver.iloc[test_index]
-X_silver_train_scaled = scaler.fit_transform(X_silver_train)
-X_silver_test_scaled = scaler.transform(X_silver_test)
+X_silver_train_scaled = scaler_platinum.fit_transform(X_silver_train)
+X_silver_test_scaled = scaler_platinum.transform(X_silver_test)
 X_silver_train_scaled = pd.DataFrame(X_silver_train_scaled, columns=X_silver_train.columns, index=X_silver_train.index)
 X_silver_test_scaled = pd.DataFrame(X_silver_test_scaled, columns=X_silver_test.columns, index=X_silver_test.index)
 lr_silver_model = LinearRegression(n_jobs=-1)
@@ -118,7 +121,7 @@ def gold_price_prediction_single_day(GOLD_high, GOLD_low, GOLD_open, GDX_low,
     })
 
     # Scale the input data
-    input_data_scaled = scaler.transform(input_data)
+    input_data_scaled = scaler_gold.transform(input_data)
     input_data_scaled = pd.DataFrame(input_data_scaled, columns=input_data.columns)
 
     # Make predictions using the linear regression model
@@ -207,15 +210,18 @@ def get_gold_price_sample_features(date):
         return features
     except KeyError:
         return {'error': 'Data not available for the specified date.'}
-
-def platinum_price_prediction_single_day(PLT_high,PLT_low,PLT_open,USO_high,USO_ajclose,USO_close,
-                                         USO_open,USO_low,EG_ajclose,EG_low,EG_close,EG_open,
-                                         EG_high,OF_high,OF_price,OF_open,OF_low,OS_high,OS_open,
-                                         OS_price,OS_low,EU_high,EU_price,EU_open,EU_low,SF_high,
-                                         SF_price,SF_open,SF_low,GOLD_high,GOLD_ajclose,GOLD_close,
-                                         GOLD_open,GOLD_low,GDX_high,GDX_open,GDX_close,
-                                         GDX_low,GDX_ajclose):
+    
+def platinum_price_prediction_single_day(PLT_high, PLT_low, PLT_open, USO_high, USO_ajclose,
+                                         USO_close, USO_open, USO_low, EG_ajclose, EG_low,
+                                         EG_close, EG_open, EG_high, OF_high, OF_price,
+                                         OF_open, OF_low, OS_high, OS_open, OS_price,
+                                         OS_low, EU_high, EU_price, EU_open, EU_low,
+                                         SF_high, SF_price, SF_open, SF_low, GOLD_high,
+                                         GOLD_ajclose, GOLD_close, GOLD_open, GOLD_low,
+                                         GDX_high, GDX_open, GDX_close, GDX_low, GDX_ajclose):
     # Create a DataFrame with the input features
+    print(f'called')
+
     input_data = pd.DataFrame({
         'PLT_high': [PLT_high],
         'PLT_low': [PLT_low],
@@ -259,9 +265,9 @@ def platinum_price_prediction_single_day(PLT_high,PLT_low,PLT_open,USO_high,USO_
     })
 
     # Scale the input data
-    input_data_scaled = scaler.transform(input_data)
+    input_data_scaled = scaler_silver.transform(input_data)
     input_data_scaled = pd.DataFrame(input_data_scaled, columns=input_data.columns)
-
+    print(f'hello this is input data {input_data_scaled.columns}')
     # Make predictions using the linear regression model
     predicted_price = lr_platinum_model.predict(input_data_scaled)
 
@@ -387,7 +393,7 @@ def silver_price_prediction_single_day(SF_high,SF_low,SF_open,GOLD_high,GOLD_clo
     })
 
     # Scale the input data
-    input_data_scaled = scaler.transform(input_data)
+    input_data_scaled = scaler_platinum.transform(input_data)
     input_data_scaled = pd.DataFrame(input_data_scaled, columns=input_data.columns)
 
     # Make predictions using the linear regression model
@@ -441,15 +447,18 @@ def silver_price_prediction_date_range(startDate, endDate):
     chart_data = []
     for date, ajclose in zip(chart_date_range, combined_ajclose):
         timestamp = int(date.timestamp()) * 1000  # Convert to milliseconds
-        open_price = silver_price_filtered.at[date, 'SF_open']
-        high_price = silver_price_filtered.at[date, 'SF_high']
-        low_price = silver_price_filtered.at[date, 'SF_low']
+        open_price = int(silver_price_filtered.at[date, 'SF_open'])
+        high_price = int(silver_price_filtered.at[date, 'SF_high'])
+        low_price = int(silver_price_filtered.at[date, 'SF_low'])
         chart_data.append([timestamp, open_price, high_price, low_price, ajclose])
+    
+    predicted_prices = [int(price) for price in predicted_prices.tolist()]
+    combined_ajclose = [int(ajclose) for ajclose in combined_ajclose.tolist()]
 
     return {
-        'predicted_price': predicted_prices.tolist(),
+        'predicted_price': predicted_prices,
         'predicted_date_range': predicted_date_range.tolist(),
-        'combined_ajclose': combined_ajclose.tolist(),
+        'combined_ajclose': combined_ajclose,
         'chart_data': chart_data
     }
 
@@ -538,7 +547,6 @@ def get_sample_features_gold():
         
         # Get gold sample features for the specified date
         sample_features = get_gold_price_sample_features(date)
-        
         return jsonify({'sample_features': sample_features})
     except Exception as e:
         return jsonify({'error': str(e)})
@@ -599,16 +607,14 @@ def predict_single_day_platinum():
         GDX_close = data['GDX_close']
         GDX_low = data['GDX_low']
         GDX_ajclose = data['GDX_ajclose']
-
         predicted_price = platinum_price_prediction_single_day(PLT_high, PLT_low, PLT_open, USO_high, USO_ajclose,
-                                                               USO_close, USO_open, USO_low, EG_ajclose, EG_low,
-                                                               EG_close, EG_open, EG_high, OF_high, OF_price,
-                                                               OF_open, OF_low, OS_high, OS_open, OS_price,
-                                                               OS_low, EU_high, EU_price, EU_open, EU_low,
-                                                               SF_high, SF_price, SF_open, SF_low, GOLD_high,
-                                                               GOLD_ajclose, GOLD_close, GOLD_open, GOLD_low,
-                                                               GDX_high, GDX_open, GDX_close, GDX_low, GDX_ajclose)
-
+                                                                USO_close, USO_open, USO_low, EG_ajclose, EG_low,
+                                                                EG_close, EG_open, EG_high, OF_high, OF_price,
+                                                                OF_open, OF_low, OS_high, OS_open, OS_price,
+                                                                OS_low, EU_high, EU_price, EU_open, EU_low,
+                                                                SF_high, SF_price, SF_open, SF_low, GOLD_high,
+                                                                GOLD_ajclose, GOLD_close, GOLD_open, GOLD_low,
+                                                                GDX_high, GDX_open, GDX_close, GDX_low, GDX_ajclose)
         return jsonify({'predicted_price': predicted_price})
     except Exception as e:
         return jsonify({'error': str(e)})

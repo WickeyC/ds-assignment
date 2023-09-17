@@ -267,7 +267,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                             href="/single-day-gold"
                             aria-label="Single Day Gold"
                             title="Single Day Gold"
-                            className="font-medium ml-6 tracking-wide text-gray-100 transition-colors duration-200 hover:text-gray-400"
+                            className="font-normal ml-6 tracking-wide text-gray-100 transition-colors duration-200 hover:text-gray-400"
                           >
                             Gold
                           </Link>

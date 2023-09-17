@@ -2,23 +2,24 @@ import React, { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import axios from "axios";
 
-const SingleDayGoldPrediction = () => {
+const SingleDaySilverPrediction = () => {
   const [availableDates, setAvailableDates] = useState<string[]>([]);
   const [selectedDate, setSelectedDate] = useState<string>("");
   const [predictedPrice, setPredictedPrice] = useState<number>(NaN);
   const [formData, setFormData] = useState({
+    SF_high: "",
+    SF_low: "",
+    SF_open: "",
     GOLD_high: "",
+    GOLD_close: "",
+    GOLD_ajclose: "",
     GOLD_low: "",
     GOLD_open: "",
-    GDX_low: "",
-    GDX_close: "",
     GDX_high: "",
-    GDX_ajclose: "",
     GDX_open: "",
-    SF_low: "",
-    SF_price: "",
-    SF_open: "",
-    SF_high: "",
+    GDX_close: "",
+    GDX_low: "",
+    GDX_ajclose: "",
     EG_low: "",
     EG_open: "",
     EG_close: "",
@@ -32,21 +33,21 @@ const SingleDayGoldPrediction = () => {
     OF_price: "",
     OF_open: "",
     OF_low: "",
-    SF_volume: "",
   });
   const fieldNames = [
+    "SF_high",
+    "SF_low",
+    "SF_open",
     "GOLD_high",
+    "GOLD_close",
+    "GOLD_ajclose",
     "GOLD_low",
     "GOLD_open",
-    "GDX_low",
-    "GDX_close",
     "GDX_high",
-    "GDX_ajclose",
     "GDX_open",
-    "SF_low",
-    "SF_price",
-    "SF_open",
-    "SF_high",
+    "GDX_close",
+    "GDX_low",
+    "GDX_ajclose",
     "EG_low",
     "EG_open",
     "EG_close",
@@ -60,7 +61,6 @@ const SingleDayGoldPrediction = () => {
     "OF_price",
     "OF_open",
     "OF_low",
-    "SF_volume",
   ];
 
   useEffect(() => {
@@ -110,7 +110,7 @@ const SingleDayGoldPrediction = () => {
     // Make a request to fetch sample features for the selected date
     if (selectedDate) {
       axios
-        .post(`http://localhost:5000/single-day/gold-sample-features`, {
+        .post(`http://localhost:5000/single-day/silver-sample-features`, {
           date: selectedDate,
         })
         .then((response) => {
@@ -140,7 +140,7 @@ const SingleDayGoldPrediction = () => {
 
     // Send the form data to your Flask server
     axios
-      .post("http://localhost:5000/single-day/gold", formData)
+      .post("http://localhost:5000/single-day/silver", formData)
       .then((response) => {
         // Handle the response from the server
         const { data } = response; // Get the response data
@@ -148,7 +148,6 @@ const SingleDayGoldPrediction = () => {
 
         if (error) {
           console.error("Server error:", error);
-          console.log(formData);
           // Handle error appropriately, e.g., display an error message
         } else {
           console.log("Predicted price:", predicted_price);
@@ -164,18 +163,19 @@ const SingleDayGoldPrediction = () => {
 
   const handleReset = () => {
     setFormData({
+      SF_high: "",
+      SF_low: "",
+      SF_open: "",
       GOLD_high: "",
+      GOLD_close: "",
+      GOLD_ajclose: "",
       GOLD_low: "",
       GOLD_open: "",
-      GDX_low: "",
-      GDX_close: "",
       GDX_high: "",
-      GDX_ajclose: "",
       GDX_open: "",
-      SF_low: "",
-      SF_price: "",
-      SF_open: "",
-      SF_high: "",
+      GDX_close: "",
+      GDX_low: "",
+      GDX_ajclose: "",
       EG_low: "",
       EG_open: "",
       EG_close: "",
@@ -189,7 +189,6 @@ const SingleDayGoldPrediction = () => {
       OF_price: "",
       OF_open: "",
       OF_low: "",
-      SF_volume: "",
     });
     setPredictedPrice(NaN);
     setSelectedDate("");
@@ -201,7 +200,7 @@ const SingleDayGoldPrediction = () => {
       <div className="px-4 py-4 border rounded border-gray-100">
         {" "}
         <h1 className="text-center ml-2 mb-3 text-xl font-bold tracking-wide text-gray-800">
-          Gold Price: Single Day Prediction
+          Silver Price: Single Day Prediction
         </h1>
         <hr className="mb-4"></hr>
         <form onSubmit={handleSubmit}>
@@ -296,7 +295,7 @@ const SingleDayGoldPrediction = () => {
                   />
                 </svg>
               </span>
-              Predicted GOLD price : $
+              Predicted SILVER price : $
               <span className="font-bold">{predictedPrice.toFixed(6)}</span>
             </p>
           </div>
@@ -306,4 +305,4 @@ const SingleDayGoldPrediction = () => {
   );
 };
 
-export default SingleDayGoldPrediction;
+export default SingleDaySilverPrediction;
