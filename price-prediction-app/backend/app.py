@@ -51,7 +51,6 @@ platinum_ajclose_corr_df = platinum_ajclose_corr_df.drop('PLT_price').sort_value
 high_corr_features = platinum_ajclose_corr_df[platinum_ajclose_corr_df['Correlation with PLT_price'] > 0.7].index.tolist()
 y_platinum = platinum_price['PLT_price']
 X_platinum = platinum_price[high_corr_features]
-print(X_platinum.columns)
 for train_index, test_index in tscv.split(X_platinum):
     X_platinum_train, X_platinum_test = X_platinum.iloc[train_index], X_platinum.iloc[test_index]
     y_platinum_train, y_platinum_test = y_platinum.iloc[train_index], y_platinum.iloc[test_index]
@@ -220,8 +219,6 @@ def platinum_price_prediction_single_day(PLT_high, PLT_low, PLT_open, USO_high, 
                                          GOLD_ajclose, GOLD_close, GOLD_open, GOLD_low,
                                          GDX_high, GDX_open, GDX_close, GDX_low, GDX_ajclose):
     # Create a DataFrame with the input features
-    print(f'called')
-
     input_data = pd.DataFrame({
         'PLT_high': [PLT_high],
         'PLT_low': [PLT_low],
@@ -267,7 +264,6 @@ def platinum_price_prediction_single_day(PLT_high, PLT_low, PLT_open, USO_high, 
     # Scale the input data
     input_data_scaled = scaler_silver.transform(input_data)
     input_data_scaled = pd.DataFrame(input_data_scaled, columns=input_data.columns)
-    print(f'hello this is input data {input_data_scaled.columns}')
     # Make predictions using the linear regression model
     predicted_price = lr_platinum_model.predict(input_data_scaled)
 
