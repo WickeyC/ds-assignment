@@ -15,7 +15,7 @@ export default function App({ Component, pageProps }: AppProps) {
   return (
     <>
       <Head>
-        <title>Product Recommender System</title>
+        <title>Price Prediction App</title>
         <link rel="icon" href="/img/favicon.svg" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
